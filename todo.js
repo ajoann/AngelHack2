@@ -35,7 +35,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 app.post('/andre', function(req, res) {
   labelPhoto(req.body.image)
-  .then(type => res.json({type}))
+  .then(type => res.json(type))
   .catch(err => {
     console.log(err);
     res.send({type: 'error', error: err})
@@ -73,7 +73,7 @@ app.listen(port, function() {
 /* Helper function */
 function labelPhoto(base64){
   return new Promise((resolve, reject) =>{
-    vision.init({auth: 'AIzaSyD3uyjc1W7J47G3o24Ez5fyBrNL4en0fwo'})
+    vision.init({auth: process.env.GOOGLE_API_KEY})
     // construct parameters
     const req = new vision.Request({
       image: new vision.Image({base64}),
