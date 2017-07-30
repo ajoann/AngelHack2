@@ -1,10 +1,5 @@
 import React from 'react';
 import {BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar} from 'recharts';
-const data = [
-      {name: 'Room 1', Trash: 1500, Recycle: 2400, Compost:1900},
-      {name: 'Room 2', Trash: 1500, Recycle: 2400, Compost:1900},
-      {name: 'Room 3', Trash: 1500, Recycle: 2400, Compost:1900}
-];
 import axios from 'axios';
 
 function wasteCalculator(array){
