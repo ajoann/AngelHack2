@@ -28,7 +28,7 @@ class Chart extends React.Component {
 
   tick() {
     console.log('in here');
-    axios.get('http://localhost:3000/recyclable', )
+    axios.get('https://angelhack-trc.herokuapp.com/recyclable', )
     .then((resp) => {
       console.log('resp', resp);
       this.setState({data: resp.data})
@@ -39,7 +39,7 @@ class Chart extends React.Component {
 
   componentDidMount() {
     console.log('lg here');
-    axios.get('http://localhost:3000/recyclable', )
+    axios.get('https://angelhack-trc.herokuapp.com/recyclable', )
     .then((resp) => {
       console.log('resp', resp);
       this.setState({data: resp.data})
