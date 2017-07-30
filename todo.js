@@ -101,20 +101,62 @@ function labelPhoto(base64){
       })
   })
 }
-
 function sortPhoto(itemLabelsArray){
-  const compost = ['product', 'fruit', 'produce', 'food', 'vegetable', 'local food', 'vegetarian food']
-  const recycle = ['product', 'laundry supply', 'household supply', 'water bottle', 'plastic bottle', 'bottle', 'bottled water', 'glass bottle']
-  let destination = 'Trash'
-  itemLabelsArray.forEach((label) => {
-    if(compost.indexOf(label.description) !== -1 && label.score >= 0.5){
-      destination = 'Compost'
-    }
-    else if(recycle.indexOf(label.description) !== -1 && label.score >= 0.5){
-      destination = 'Recycle'
-    }
-  })
-  console.log(destination)
-  return destination;
+ const compost = ['product', 'fruit', 'produce', 'food', 'vegetable', 'local food', 'vegetarian food']
+ const recycle = ['product', 'laundry supply', 'household supply', 'water bottle', 'plastic bottle', 'bottle', 'bottled water', 'glass bottle']
+ let destination = 'Trash'
+ itemLabelsArray.forEach((label) => {
+   if(compost.indexOf(label.description) !== -1 && label.score >= 0.5){
+     destination = 'Compost'
+   }
+   else if(recycle.indexOf(label.description) !== -1 && label.score >= 0.5){
+     destination = 'Recycle'
+   }
+ })
+
+ Particle.find({'photonDeviceId': 'Dev 1'})
+ .then((device) => {
+   console.log('resp', device)
+   // , function(err, device){
+   if(device.length!==0){
+     var currDevice = device[0]
+     var lastWaste = device[0].lastWaste
+     var newWasteHistory = Object.assign({}, device[0].wasteHistory);
+     newWasteHistory[destination] +=1;
+     currDevice.lastWaste = destination;
+     currDevice.wasteHistory = newWasteHistory;
+     currDevice.save(function(err, result) {
+       console.log('ERROR: ', err);
+       console.log('RESULT: ', result);
+     });
+   } else{
+     var deviceWasteHistory = {"Compost": 0, "Trash": 0, "Recycle": 0}
+     deviceWasteHistory[destination] = deviceWasteHistory[destination] + 1;
+     var currDevice = new Particle({
+        photonDeviceId: 'Dev 1',
+        lastWaste: destination,
+        wasteHistory: deviceWasteHistory
+      })
+     currDevice.save()
+   }
+ })
+
+ return destination;
 
 }
+// function sortPhoto(itemLabelsArray){
+//   const compost = ['product', 'fruit', 'produce', 'food', 'vegetable', 'local food', 'vegetarian food']
+//   const recycle = ['product', 'laundry supply', 'household supply', 'water bottle', 'plastic bottle', 'bottle', 'bottled water', 'glass bottle']
+//   let destination = 'Trash'
+//   itemLabelsArray.forEach((label) => {
+//     if(compost.indexOf(label.description) !== -1 && label.score >= 0.5){
+//       destination = 'Compost'
+//     }
+//     else if(recycle.indexOf(label.description) !== -1 && label.score >= 0.5){
+//       destination = 'Recycle'
+//     }
+//   })
+//   console.log(destination)
+//   return destination;
+//
+// }
