@@ -114,7 +114,7 @@ function sortPhoto(itemLabelsArray){
    }
  })
 
- Particle.find({'photonDeviceId': 'Dev 1'})
+ Particle.find({'photonDeviceId': 'Dev1'})
  .then((device) => {
    console.log('resp', device)
    // , function(err, device){
@@ -130,10 +130,11 @@ function sortPhoto(itemLabelsArray){
        console.log('RESULT: ', result);
      });
    } else{
+     console.log('CHECK ME: ', device);
      var deviceWasteHistory = {"Compost": 0, "Trash": 0, "Recycle": 0}
      deviceWasteHistory[destination] = deviceWasteHistory[destination] + 1;
      var currDevice = new Particle({
-        photonDeviceId: 'Dev 1',
+        photonDeviceId: 'Dev1',
         lastWaste: destination,
         wasteHistory: deviceWasteHistory
       })
