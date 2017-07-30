@@ -6,88 +6,40 @@ var User = models.User;
 const path = require('path');
 const axios = require('axios');
 
-var google = require('googleapis');
-var OAuth2 = google.auth.OAuth2;
-
-
-var User = models.User;
-var Session = require('express-session');
-// var index = require('../public/index.html')
-
-function getoAuthClient(){
-	return new OAuth2(
-		process.env.GOOGLE_CLIENT_ID,
-		process.env.GOOGLE_CLIENT_SECRET,
-		"http://localhost:3000/connect/callback"
-	)
-}
-
-
-// generate a url that asks permissions for Google+ and Google Calendar scopes
-function getAuthURL(){
-  var oauth2Client = getoAuthClient()
-  var scopes = [
-  'https://www.googleapis.com/auth/plus.me',
-  'https://www.googleapis.com/auth/calendar',
-  'https://www.googleapis.com/auth/gmail.modify',
-  'https://www.googleapis.com/auth/cloud-platform'
-  ];
-
-  var url = oauth2Client.generateAuthUrl({
-    // 'online' (default) or 'offline' (gets refresh_token)
-    access_type: 'offline',
-
-    // If you only need one scope you can pass it as a string
-    scope: scopes,
-    // Optional property that passes state parameters to redirect URI
-    // state: { foo: 'bar' }
-    client_id: '930642252734-jiiotbobo4cbtd92179rnd4e4teea5fv.apps.googleusercontent.com'
-  });
-  return url
-
-}
-
-
 
 //////////////////////////////// PUBLIC ROUTES ////////////////////////////////
 // Users who are not logged in can see these routes
 
-router.use(Session({
-    secret: 'tZ0NoQXoDd5lHuw3KVvKipAN',
-    resave: true,
-    saveUninitialized: true
-}));
-
-router.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '../public/index.html'));
-});
-
-router.get("/connect/callback", function (req, res) {
-    var oauth2Client = getoAuthClient()
-    var session = req.session;
-    var code = req.query.code; // the query param code
-    console.log("oauth2Client, ", oauth2Client)
-    oauth2Client.getToken(code, function(err, tokens) {
-      // Now tokens contains an access_token and an optional refresh_token. Save them.
- 	  console.log("tokens ", tokens)
-      if(!err) {
-        oauth2Client.setCredentials(tokens);
-        //saving the token to current session
-        session["tokens"]=tokens;
-        console.log("login successful!")
-        simpleLabel(oauth2Client)
-        res.redirect('/hi')
-
-
-      }
-      else{
-      	console.log(err)
-        res.send(`
-            <h3>Login failed!!</h3>;
-        `);
-      }
-    });
-});
+// router.get('/', function(req, res) {
+    // res.sendFile(path.join(__dirname + '../public/index.html'));
+// });
+//
+// router.get("/connect/callback", function (req, res) {
+//     var oauth2Client = getoAuthClient()
+//     var session = req.session;
+//     var code = req.query.code; // the query param code
+//     console.log("oauth2Client, ", oauth2Client)
+//     oauth2Client.getToken(code, function(err, tokens) {
+//       // Now tokens contains an access_token and an optional refresh_token. Save them.
+//  	  console.log("tokens ", tokens)
+//       if(!err) {
+//         oauth2Client.setCredentials(tokens);
+//         //saving the token to current session
+//         session["tokens"]=tokens;
+//         console.log("login successful!")
+//         simpleLabel(oauth2Client)
+//         res.redirect('/hi')
+//
+//
+//       }
+//       else{
+//       	console.log(err)
+//         res.send(`
+//             <h3>Login failed!!</h3>;
+//         `);
+//       }
+//     });
+// });
 
 router.get('/andre', function(req, res) {
   simpleLabel();
@@ -147,26 +99,74 @@ router.get("/hi", function(req, res){
 })
 
 
+/************* Helper function *************/
+function labelPhoto(base64){
+  return new Promise((resolve, reject) =>{
+    vision.init({auth: 'AIzaSyD3uyjc1W7J47G3o24Ez5fyBrNL4en0fwo'})
+    // construct parameters
+    const req = new vision.Request({
+      image: new vision.Image({base64}),
+      //image: new vision.Image({url: fileUri}),
+      features: [
+        new vision.Feature('LABEL_DETECTION', 10),
+      ]
+    })
+
+    // send single request
+
+      vision.annotate(req)
+      .then(res => {
+        var itemMatches = (res.responses[0].labelAnnotations)
+        var destination = sortPhoto(itemMatches)
+        // device number: 200025001847343438323536
+        // access token: 83488e0ae4449156570ffe3b9c0774c826ea6166
+        axios.post('https://api.particle.io/v1/devices/200025001847343438323536/led?access_token=83488e0ae4449156570ffe3b9c0774c826ea6166',
+          {value: destination});
+          resolve(destination);
+      })
+      .catch(e => {
+        console.log('Error: ', e)
+        reject(e);
+      })
+  })
+}
+
+function sortPhoto(itemLabelsArray){
+  const compost = ['product', 'fruit', 'produce', 'food', 'vegetable', 'local food', 'vegetarian food']
+  const recycle = ['product', 'laundry supply', 'household supply', 'water bottle', 'plastic bottle', 'bottle', 'bottled water', 'glass bottle']
+  let destination = 'Trash'
+  itemLabelsArray.forEach((label) => {
+    if(compost.indexOf(label.description) !== -1 && label.score >= 0.5){
+      destination = 'Compost'
+    }
+    else if(recycle.indexOf(label.description) !== -1 && label.score >= 0.5){
+      destination = 'Recycle'
+    }
+  })
+  console.log(destination)
+  return destination;
+
+}
 
 
 ///////////////////////////// END OF PUBLIC ROUTES /////////////////////////////
-
-router.use(function(req, res, next){
-  if (!req.user) {
-    res.redirect('/login');
-  } else {
-    return next();
-  }
-});
+//
+// router.use(function(req, res, next){
+//   if (!req.user) {
+//     res.redirect('/login');
+//   } else {
+//     return next();
+//   }
+// });
 
 //////////////////////////////// PRIVATE ROUTES ////////////////////////////////
 // Only logged in users can see these routes
-
-router.get('/protected', function(req, res, next) {
-  res.render('protectedRoute', {
-    username: req.user.username,
-  });
-});
+//
+// router.get('/protected', function(req, res, next) {
+//   res.render('protectedRoute', {
+//     username: req.user.username,
+//   });
+// });
 
 ///////////////////////////// END OF PRIVATE ROUTES /////////////////////////////
 
