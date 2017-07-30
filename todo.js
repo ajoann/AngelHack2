@@ -102,8 +102,8 @@ function labelPhoto(base64){
   })
 }
 function sortPhoto(itemLabelsArray){
- const compost = ['fruit','napkin', 'produce', 'food', 'vegetable', 'local food', 'vegetarian food']
- const recycle = ['cola','product', 'aluminum', 'laundry supply', 'household supply', 'water bottle', 'plastic bottle', 'bottle', 'bottled water', 'glass bottle']
+ const compost = ['fruit','napkin', 'produce', 'food', 'vegetable', 'local food', 'vegetarian food', 'paper']
+ const recycle = ['cola','product','aluminum', 'glass', 'laundry supply', 'household supply', 'water bottle', 'plastic bottle', 'bottle', 'bottled water', 'glass bottle']
  let destination = 'Trash'
  itemLabelsArray.forEach((label) => {
    if(compost.indexOf(label.description) !== -1 && label.score >= 0.5){
