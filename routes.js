@@ -14,14 +14,14 @@ router.get('/', (req, res) => {
 });
 
 
-router.post('/andre', function(req, res) {
-  labelPhoto(req.body.image)
-  .then(type => res.json({type}))
-  .catch(err => {
-    console.log(err);
-    res.send({type: 'error', error: err})
-  });
-});
+// router.post('/andre', function(req, res) {
+//   labelPhoto(req.body.image)
+//   .then(type => res.json({type}))
+//   .catch(err => {
+//     console.log(err);
+//     res.send({type: 'error', error: err})
+//   });
+// });
 
 router.get('/recyclable', function(req, res) {
   console.log('inside route');
