@@ -4,7 +4,7 @@ const vision = require('node-cloud-vision-api')
 const logger = require('morgan');
 const axios = require('axios');
 const mongoose = require('mongoose')
-const mongoosedb = 'mongodb://test:test@ds129023.mlab.com:29023/angelhacksf2017'
+const mongoosedb = process.env.MONGODB_URI;
 
 const port = process.env.PORT || 3000;
 const app = express();
