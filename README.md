@@ -14,3 +14,6 @@ The process is simple!
 * and simultaneously a Particle Photon receives a signal to the port corresponding to that category
 * each interaction is tracked, and a display of all the interactions can be viewed on the website
 
+
+
+link to our submission to AngelHack: http://www.hackathon.io/trc
